@@ -77,8 +77,8 @@ int main(int argc, char** argv)
 
         auto features = readFeaturesFromFile(argv[1]);
 
-        const int           k      = 9;
-        const int           L      = 3;
+        const int           k      = 10;
+        const int           L      = 6;
         const WeightingType weight = TF_IDF;
         const ScoringType   score  = L1_NORM;
         DBoW3::Vocabulary   voc(k, L, weight, score);
@@ -87,6 +87,13 @@ int main(int argc, char** argv)
         voc.create(features);
         cerr << "Saving " << argv[2] << endl;
         voc.save(argv[2]);
+
+        string test = "/home/qiuzc/Documents/1_code/1_slam/7_slam_ws/src/mapping_localization/mapping_localization/"
+                      "config/loop_detection/voc47floor.yml.gz";
+        std::ifstream ifile(test);
+        if (!ifile.is_open()) {
+            cerr << "could not open input file" << endl;
+        }
     }
     catch (std::exception& ex) {
         cerr << ex.what() << endl;

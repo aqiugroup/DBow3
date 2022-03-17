@@ -23,6 +23,9 @@ IF(NOT CMAKE_BUILD_TYPE )
    SET( CMAKE_BUILD_TYPE "Release" )
 ENDIF()
 
+# set(CMAKE_BUILD_TYPE "Debug")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Wall -g -ggdb")
+
 #------------------------------------------------------
 # Lib Names and Dirs
 #------------------------------------------------------
@@ -44,15 +47,18 @@ endif()
 
 #
 OPTION(BUILD_UTILS	"Set to OFF to not build utils" ON)
+OPTION(BUILD_TESTS "Set to OFF to not build tests" ON)
 OPTION(USE_CONTRIB 	"Set to ON if contrib are installed" OFF)
 OPTION(BUILD_SHARED_LIBS 	"Set to OFF to build static libraries" ON)
 
 # ----------------------------------------------------------------------------
 #   Find Dependencies
 # ----------------------------------------------------------------------------
+find_package(Boost REQUIRED COMPONENTS math_c99 random)
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV  REQUIRED)
 IF(USE_CONTRIB)
-add_definitions(-DUSE_CONTRIB)
+    add_definitions(-DUSE_CONTRIB)
 ENDIF()
 if(NOT OpenCV_VERSION VERSION_LESS "3.0")
     ADD_DEFINITIONS(-DOPENCV_VERSION_3)
@@ -61,9 +67,12 @@ ELSE()
     SET(OPENCV_VERSION_3 OFF)
 ENDIF()
 
-include_directories(${OpenCV_INCLUDE_DIRS})
-
-SET(REQUIRED_LIBRARIES ${REQUIRED_LIBRARIES} ${OpenCV_LIBS})
+include_directories(
+    ${EIGEN3_INCLUDE_DIR}
+    ${Boost_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+)
+SET(REQUIRED_LIBRARIES ${REQUIRED_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
 # ----------------------------------------------------------------------------
 #   PROJECT CONFIGURATION
@@ -76,7 +85,7 @@ IF (INSTALL_DOC)
     INCLUDE("${PROJECT_SOURCE_DIR}/generateDoc.cmake")
     GENERATE_DOCUMENTATION(${PROJECT_SOURCE_DIR}/dox.in)
 ENDIF()
- 
+
 # ----------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
 # ----------------------------------------------------------------------------
